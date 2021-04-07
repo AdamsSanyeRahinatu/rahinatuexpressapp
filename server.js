@@ -1,19 +1,48 @@
-const express = require("express")
+const express = require ("express")
+const dotenv = require ("dotenv")
+const humans = require("./users")
+const morgan = require("morgan")
+
+dotenv.config()
+
 const app = express()
 
-const port = 5000;
+// middlewares
 
-app.get("/" ,(req, res)=> {
-    res.send("welcome to my api")
-})
-app.post("/postrequest" ,(req, res)=> {
-    res.send("POST YOUR REQUEST HERE")
-})
-app.delete("/deleterequest" ,(req, res)=> {
-    res.send("DELETE FROM HERE")
-})
-app.put("/p_request" ,(req, res)=> {
-    res.send("PUT HERE")
+app.use(morgan("dev"))
+
+// body parser to allow updating, thus, PUT request
+app.use(express.json())
+
+// single human
+app.get("/api/v3/humans/:name", (req, res)=> {
+    res.json(humans.filter((human)=>human.name === req.params.name));
 })
 
-app.listen(port, ()=> console.log(`server is working ${port}`));
+// delete a human
+app.delete("/api/v3/humans/:name", (req, res)=> {
+    res.json(humans.filter((human)=>human.name !== req.params.name));
+})
+
+// updating a human ternary operator style 
+app.put("/api/v3/humans/:name", (req, res)=> {
+    const humanFound= humans.some((human)=> human.name === req.params.name);
+    humanFound && 
+        humanss.forEach((human)=> {
+            human.name=req.body.name &&
+            ((human.name = req.params.name),
+            (human.comunity = req.body.community))
+        })
+        res.json(humans);
+})
+
+ 
+
+// get all humans
+app.get("/api/v3/humans", (req, res)=> {
+    res.json(humans);
+})
+
+const PORT = process.env.PORT
+
+app.listen(PORT, ()=> console.log(`Server started on port ${PORT}`) )
